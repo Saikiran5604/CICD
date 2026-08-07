@@ -1,4 +1,4 @@
-# 🚀 Automated CI/CD Web Server Deployment
+#  Automated CI/CD Web Server Deployment
 
 A hands-on DevOps project demonstrating a complete, automated Continuous Integration and Continuous Deployment (CI/CD) pipeline using GitHub Actions, Docker Hub, and an AWS EC2 instance.
 
@@ -38,11 +38,11 @@ To run this workflow without authentication errors, the following encrypted envi
 
 | Secret Name | Value Context | Description |
 | :--- | :--- | :--- |
-| `DOCKERHUB_USERNAME` | `saikiranreddy5604` | Your Docker Hub identity namespace |
-| `DOCKERHUB_TOKEN` | `dckr_pat_...` | Docker Personal Access Token with Write scope |
-| `SERVER_HOST` | `3.89.103.188` | Public IP Address of your active AWS EC2 host |
-| `SERVER_USER` | `ubuntu` | Root administrative host username |
-| `SERVER_SSH_KEY` | `-----BEGIN OPENSSH...` | Complete multi-line raw ED25519 private key block |
+| `DOCKERHUB_USERNAME` | `<user_name>` | Your Docker Hub identity namespace |
+| `DOCKERHUB_TOKEN` | `<token>` | Docker Personal Access Token with Write scope |
+| `SERVER_HOST` | `<ip>` | Public IP Address of your active AWS EC2 host |
+| `SERVER_USER` | `<hostname>` | Root administrative host username |
+| `SERVER_SSH_KEY` | `<private_key>` | Complete multi-line raw ED25519 private key block |
 
 ---
 
@@ -73,4 +73,4 @@ newgrp docker
    git push origin main
    ```
 3. Open the **Actions** tab on your GitHub UI repository panel to track validation logs.
-4. Once completed, browse your public IP mapping reference root path endpoint directly: `http://3.89.103` (Ensure you browse over plain `http` to prevent browser cache `https` reset anomalies).
+4. Once completed, browse your public IP mapping reference root path endpoint directly: `http://<ip>` (Ensure you browse over plain `http` to prevent browser cache `https` reset anomalies).
