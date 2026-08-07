@@ -60,14 +60,14 @@ jobs:
             docker run -d \
               --name $APP_NAME \
               --restart unless-stopped \
-              -p 5000:80 \
+              -p 80:80 \
               $IMAGE
             
             # Give it a moment to start up
             sleep 5
             
             # Verify it's actually working (Changed health endpoint to root '/')
-            if curl -f http://localhost:5000/; then
+            if curl -f http://localhost:80/; then
               echo "🎉 Deployment successful!"
               # Clean up unused Docker images
               docker image prune -f
