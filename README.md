@@ -1,15 +1,76 @@
-# CICD
-I wanted to learn about CICD setup the better to start is by hands on .
- 
-### Flow 
-1. create a simple web application 
-2. Write the Docker file for it 
-3. Build the Docker image and push to registry 
-4. Expose the port and run the container and verify if the website is accesable from localhost:8080
+# 🚀 Automated CI/CD Web Server Deployment
 
-This is the manual steps so when ever i create a change/update in the web application code i need to manually build the image and then run the container and verify if the application is accessiable 
+A hands-on DevOps project demonstrating a complete, automated Continuous Integration and Continuous Deployment (CI/CD) pipeline using GitHub Actions, Docker Hub, and an AWS EC2 instance.
 
-to prevent this manual effort we design a CICD in github actions 
-When ever to push the code the CICD pipeline will be trigger and it will build the image and push ECR and run the container and will do the checks as well 
-We can add test-cases as well and delete the old image if not required .
+---
 
+##  Architectural Pipeline Flow
+
+```mermaid
+graph LR
+    A[Code Push to main] --> B[GitHub Actions Trigger]
+    B --> C[Docker Buildx & Cache]
+    C --> D[Push Image to Docker Hub]
+    D --> E[SSH into AWS EC2]
+    E --> F[Pull & Deploy Container]
+    F --> G[Automated Health Check]
+```
+
+1. **Code Modification**: Developer updates code (e.g., `index.html`) locally and pushes to the `main` branch.
+2. **Continuous Integration (CI)**: GitHub Actions builds a modern, lightweight Nginx container utilizing Docker Buildx caching optimization.
+3. **Registry Upload**: The runner builds two separate image tags (`latest` and a unique Git `commit SHA`) and securely pushes them to Docker Hub.
+4. **Continuous Deployment (CD)**: GitHub securely handshakes into an AWS EC2 host using ultra-secure ED25519 SSH keys, terminates the orphan container runtime, fetches the newest container layer, binds to public HTTP Port `80`, and executes an automated health check validation.
+
+---
+
+##  Stack Components
+
+*   **Application Server**: Nginx Alpine (`FROM nginx:alpine`)
+*   **Automation Platform**: GitHub Actions Platform (Node 24 runtime ecosystem)
+*   **Remote Server Engine**: AWS EC2 Instance running Ubuntu 26.04 LTS
+*   **Secure Remote Access**: OpenSSH with native ED25519 cryptographic signatures
+
+---
+
+##  Required GitHub Secrets Configuration
+
+To run this workflow without authentication errors, the following encrypted environment variables must be registered under **Repository Settings > Secrets and variables > Actions**:
+
+| Secret Name | Value Context | Description |
+| :--- | :--- | :--- |
+| `DOCKERHUB_USERNAME` | `saikiranreddy5604` | Your Docker Hub identity namespace |
+| `DOCKERHUB_TOKEN` | `dckr_pat_...` | Docker Personal Access Token with Write scope |
+| `SERVER_HOST` | `3.89.103.188` | Public IP Address of your active AWS EC2 host |
+| `SERVER_USER` | `ubuntu` | Root administrative host username |
+| `SERVER_SSH_KEY` | `-----BEGIN OPENSSH...` | Complete multi-line raw ED25519 private key block |
+
+---
+
+##  Host Server Pre-Requisites (AWS Console EC2 Setup)
+
+### 1. Networking Inbound Firewall Profiles
+Ensure the attached AWS Security Group explicitly allows the following ingress parameters:
+*   **Port 22 (SSH)**: Source `0.0.0.0/0` (Allows GitHub Runner connectivity)
+*   **Port 80 (HTTP)**: Source `0.0.0.0/0` (Allows global public web browsing requests)
+
+### 2. Linux Environment Verification
+Connect to your cloud provider node terminal instance and run this sequence once to allow non-sudo Docker access flags:
+```bash
+sudo apt-get update && sudo apt-get install -y docker.io
+sudo usermod -aG docker ubuntu
+newgrp docker
+```
+
+---
+
+##  Triggering an Automated Deployment
+
+1. Modify your web layout or headers directly inside `webserver-docker/index.html`.
+2. Stage, commit, and push your tracking logs to GitHub:
+   ```bash
+   git add webserver-docker/index.html
+   git commit -m "feat: updated website homepage content header"
+   git push origin main
+   ```
+3. Open the **Actions** tab on your GitHub UI repository panel to track validation logs.
+4. Once completed, browse your public IP mapping reference root path endpoint directly: `http://3.89.103` (Ensure you browse over plain `http` to prevent browser cache `https` reset anomalies).
